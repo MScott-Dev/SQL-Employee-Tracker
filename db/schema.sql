@@ -27,6 +27,7 @@ CREATE TABLE employees (
 --   uses id from employee
   FOREIGN KEY (manager_id)
   REFERENCES employees(id)
+  DEFAULT NULL
 );
 
 
