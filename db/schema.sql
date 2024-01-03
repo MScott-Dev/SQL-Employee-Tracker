@@ -22,7 +22,7 @@ CREATE TABLE employees (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
 --   uses id from role
-  FOREIGN KEY (roles_id)
+  FOREIGN KEY (role_id)
   REFERENCES roles(id)
 --   uses id from employee
   FOREIGN KEY (manager_id)

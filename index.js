@@ -66,6 +66,72 @@ var editDataBase = function () {
                                 editDataBase();
                             });
                         })
-                }
-            }
-        )}
+                } else if (answers.prompt === 'Add Employee') {
+                    // Calling the database to acquire the roles and employees
+                    db.query(`SELECT * FROM employees, roles`, (err, result) => {
+                        if (err) throw err;
+        
+                        inquirer.prompt([
+                            {
+                                type: 'input',
+                                name: 'firstName',
+                                message: 'What is the new employees first name?',
+                                validate: firstNameInput => {
+                                    if (firstNameInput) {
+                                        return true;
+                                    } else {
+                                        console.log('Please Add Their First Name!');
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                type: 'input',
+                                name: 'lastName',
+                                message: 'What is the new employees last name?',
+                                validate: lastNameInput => {
+                                    if (lastNameInput) {
+                                        return true;
+                                    } else {
+                                        console.log('Please Add Their Last Name!');
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                type: 'list',
+                                name: 'role',
+                                message: 'What is the new employees role?',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].title);
+                                    }
+                                    var newArray = [...new Set(array)];
+                                    return newArray;
+                                }
+                            },
+                            {
+                                type: 'list',
+                                name: 'manager',
+                                message: 'Who is the employees manager? 1 for Matthew and 3 for Ashley',
+                                choices: [1, 3]
+                            }
+                        ]).then((answers) => {
+                            // Comparing the result and storing it into the variable
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].title === answers.role) {
+                                    var role = result[i];
+                                }
+                            }
+        
+                            db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [answers.firstName, answers.lastName, role.id, answers.manager.id], (err, result) => {
+                                if (err) throw err;
+                                console.log(`Added ${answers.firstName} ${answers.lastName} to the database.`)
+                               editDataBase();
+                            });
+                        })
+                    });
+                }      
+})}
+        
