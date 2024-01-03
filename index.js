@@ -1,7 +1,8 @@
+// Dependencies
 const inquirer = require('inquirer');
-const sequelize = require('./connect');
+const db = require('./connect');
 
-function editDataBase() {
+var editDataBase = function () {
     inquirer
         .prompt([
             {
@@ -18,4 +19,30 @@ function editDataBase() {
                 ]
             }
         ])
-}
+            .then((answers) => {
+                if (answers.prompt === 'View All Departments') {
+                    // Displays all departments inside a table
+                    db.query('SELECT * FROM departments', (err, result) => {
+                        if (err) throw err;
+                        console.log("Here's all the Departments.");
+                        console.table(result);
+                        editDataBase();
+                    });
+                } else if (answers.prompt === "View all Employees") {
+                    // Displays all employees inside a table
+                    db.query('SELECT * FROM employees', (err, result) => {
+                        if (err) throw err;
+                        console.log("Here's all the Employees.");
+                        console.table(result);
+                        editDataBase();
+                    });
+                } else if (answers.prompt === "View all Roles") {
+                    // Displays all roles inside a table
+                        db.query('SELECT * FROM roles', (err, result) => {
+                            if (err) throw err;
+                            console.log("Here's all the Roles.");
+                            console.table(result);
+                            editDataBase();
+                        });
+                }}
+        )}
