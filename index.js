@@ -132,6 +132,12 @@ var editDataBase = function () {
                             });
                         })
                     });
-                }      
+                } else if (answers.prompt === "Add Role") {
+                    db.query('SELECT * FROM roles', (err, result) => {
+                        if (err) throw err;
+
+                        
+                    })
+                }   
 })}
         
