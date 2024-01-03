@@ -44,5 +44,28 @@ var editDataBase = function () {
                             console.table(result);
                             editDataBase();
                         });
-                }}
+                } else if (answers.prompt === 'Add Department') {
+                    // Lets the user add a new department into the database
+                    inquirer.prompt([{
+                        type: 'input',
+                        name: 'department',
+                        message: 'What is the new department?',
+                        validate: departmentInput => {
+                            if (departmentInput) {
+                                return true;
+                            } else {
+                                console.log('Please enter a new department name!');
+                                return false;
+                            }
+                        }
+                    }])
+                        .then((answers) => {
+                            db.query('INSERT INTO departments (name) VALUES (?)', [answers.department], (err, result) => {
+                                if (err) throw err;
+                                console.log(`Added ${answers.department} into the database! View it using "View all Departments".`)
+                                editDataBase();
+                            });
+                        })
+                }
+            }
         )}
