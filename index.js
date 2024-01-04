@@ -123,8 +123,8 @@ var editDataBase = function () {
                             {
                                 type: 'list',
                                 name: 'manager',
-                                message: 'Who is the employees manager? 1 for Matthew and 3 for Ashley',
-                                choices: [1, 3]
+                                message: 'Who is the employees manager? 1 for Matthew, 3 for Ashley, or null if they are a manager',
+                                choices: [1, 3, "null"]
                             }
                         ]).then((answers) => {
                             // Comparing the result and storing it into the variable
@@ -134,7 +134,7 @@ var editDataBase = function () {
                                 }
                             }
         
-                            db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [answers.firstName, answers.lastName, role.id, answers.manager.id], (err, result) => {
+                            db.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`, [answers.firstName, answers.lastName, role.id, answers.manager], (err, result) => {
                                 if (err) throw err;
                                 console.log(`Added ${answers.firstName} ${answers.lastName} to the database.`)
                                editDataBase();
