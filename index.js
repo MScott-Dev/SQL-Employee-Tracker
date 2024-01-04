@@ -2,11 +2,20 @@
 const inquirer = require('inquirer');
 const db = require('./connect');
 
+// Start server after DB connection
+db.connect(err => {
+    if (err) throw err;
+    console.log('Database connected.');
+    editDataBase();
+});
+
+
 var editDataBase = function () {
     inquirer
         .prompt([
             {
                 type: "list",
+                name: "options",
                 message: "Which action would you like to perform?",
                 choices: [
                     "View All Departments",
@@ -20,23 +29,23 @@ var editDataBase = function () {
             }
         ])
             .then((answers) => {
-                if (answers.prompt === 'View All Departments') {
+                if (answers.options === 'View All Departments') {
                     // Displays all departments inside a table
-                    db.query('SELECT * FROM departments', (err, result) => {
+                    db.query(`SELECT * FROM departments;`, (err, result) => {
                         if (err) throw err;
                         console.log("Here's all the Departments.");
                         console.table(result);
                         editDataBase();
                     });
-                } else if (answers.prompt === "View all Employees") {
+                } else if (answers.options === "View All Employees") {
                     // Displays all employees inside a table
-                    db.query('SELECT * FROM employees', (err, result) => {
+                    db.query(`SELECT * FROM employees;`, (err, result) => {
                         if (err) throw err;
                         console.log("Here's all the Employees.");
                         console.table(result);
                         editDataBase();
                     });
-                } else if (answers.prompt === "View all Roles") {
+                } else if (answers.options === "View All Roles") {
                     // Displays all roles inside a table
                         db.query('SELECT * FROM roles', (err, result) => {
                             if (err) throw err;
@@ -44,7 +53,7 @@ var editDataBase = function () {
                             console.table(result);
                             editDataBase();
                         });
-                } else if (answers.prompt === 'Add Department') {
+                } else if (answers.options === 'Add Department') {
                     // Lets the user add a new department into the database
                     inquirer.prompt([{
                         type: 'input',
@@ -66,8 +75,8 @@ var editDataBase = function () {
                                 editDataBase();
                             });
                         })
-                } else if (answers.prompt === 'Add Employee') {
-                    // Calling the database to acquire the roles and employees
+                } else if (answers.options === 'Add Employee') {
+                    // Calling the database to acquire the employees and roles
                     db.query(`SELECT * FROM employees, roles`, (err, result) => {
                         if (err) throw err;
         
@@ -132,7 +141,8 @@ var editDataBase = function () {
                             });
                         })
                     });
-                } else if (answers.prompt === "Add Role") {
+                } else if (answers.options === "Add Role") {
+                    // Calling the database to acquire the roles
                     db.query('SELECT * FROM roles', (err, result) => {
                         if (err) throw err;
 
@@ -191,6 +201,61 @@ var editDataBase = function () {
                         })
                     });
                 
-                }   
-})}
+                }   else if (answers.options === 'Update A Role') {
+                    // Calling the database to acquire the employees and roles
+                    db.query(`SELECT * FROM employees, roles`, (err, result) => {
+                        if (err) throw err;
+        
+                        inquirer.prompt([
+                            {
+                                type: 'list',
+                                name: 'employee',
+                                message: 'Which employees role do you want to update?',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].last_name);
+                                    }
+                                    var employeeArray = [...new Set(array)];
+                                    return employeeArray;
+                                }
+                            },
+                            {
+                                type: 'list',
+                                name: 'role',
+                                message: 'What is their new role?',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].title);
+                                    }
+                                    var newArray = [...new Set(array)];
+                                    return newArray;
+                                }
+                            }
+                        ]).then((answers) => {
+                            // Comparing the result and storing it into the variable
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].last_name === answers.employee) {
+                                    var name = result[i];
+                                }
+                            }
+        
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].title === answers.role) {
+                                    var role = result[i];
+                                }
+                            }
+        
+                            db.query(`UPDATE employee SET ? WHERE ?`, [{role_id: role}, {last_name: name}], (err, result) => {
+                                if (err) throw err;
+                                console.log(`Updated ${answers.employee} role to the database.`)
+                                editDataBase();
+                            });
+                        })
+                    });
+                }
+            })
+        };
+
         

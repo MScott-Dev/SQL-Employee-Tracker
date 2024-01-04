@@ -1,6 +1,8 @@
 DROP DATABASE IF EXISTS employee_manager_db;
 CREATE DATABASE employee_manager_db;
 
+
+USE employee_manager_db;
 -- Creates the different tables to be used inside the database
 
 CREATE TABLE departments (
@@ -13,6 +15,7 @@ CREATE TABLE roles (
   title VARCHAR(30) NOT NULL,
   salary DECIMAL NOT NULL,
 --   uses id from department
+  department_id INT NOT NULL,
   FOREIGN KEY (department_id)
   REFERENCES departments(id)
 );
@@ -22,15 +25,9 @@ CREATE TABLE employees (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
 --   uses id from role
+  role_id INT NOT NULL,
   FOREIGN KEY (role_id)
-  REFERENCES roles(id)
---   uses id from employee
-  FOREIGN KEY (manager_id)
-  REFERENCES employees(id)
-  DEFAULT NULL
+  REFERENCES roles(id),
+  manager_id INT
 );
 
-
-
-
-USE employee_manager_db;
