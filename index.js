@@ -143,7 +143,7 @@ var editDataBase = function () {
                     });
                 } else if (answers.options === "Add Role") {
                     // Calling the database to acquire the roles
-                    db.query('SELECT * FROM roles', (err, result) => {
+                    db.query(`SELECT * FROM departments`, (err, result) => {
                         if (err) throw err;
 
                         inquirer.prompt([
@@ -180,7 +180,7 @@ var editDataBase = function () {
                                 choices: () => {
                                     var array = [];
                                     for (var i = 0; i < result.length; i++) {
-                                        array.push(result[i].name);
+                                        array.push(result[i].department_name);
                                     }
                                     return array;
                                 }
@@ -188,12 +188,12 @@ var editDataBase = function () {
                         ]).then((answers) => {
                             // Comparing the result and storing it into the variable
                             for (var i = 0; i < result.length; i++) {
-                                if (result[i].name === answers.department) {
+                                if (result[i].department_name === answers.department) {
                                     var department = result[i];
                                 }
                             }
         
-                            db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [answers.role, answers.salary, department.id], (err, result) => {
+                            db.query(`INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`, [answers.role, answers.salary, department.id], (err, result) => {
                                 if (err) throw err;
                                 console.log(`Added ${answers.role} to the database.`)
                                 editDataBase();
