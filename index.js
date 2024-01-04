@@ -69,7 +69,7 @@ var editDataBase = function () {
                         }
                     }])
                         .then((answers) => {
-                            db.query('INSERT INTO departments (name) VALUES (?)', [answers.department], (err, result) => {
+                            db.query(`INSERT INTO departments (department_name) VALUES (?)`, [answers.department], (err, result) => {
                                 if (err) throw err;
                                 console.log(`Added ${answers.department} into the database! View it using "View all Departments".`)
                                 editDataBase();
